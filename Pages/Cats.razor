@@ -1,0 +1,70 @@
+﻿@page "/cats"
+@inject CatDatabase catDb
+@using BlazorHybridApp.Models
+@using BlazorHybridApp.Data
+@using System.Collections.Generic
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@using System;
+@using System.Net;
+@using System.Net.Http;
+@using System.Net.Http.Headers;
+@using System.Threading.Tasks;
+
+<h3>Lost & Found Cats Database</h3>
+
+@if(cats is not null)
+{
+	<ul>
+	@foreach(var c in cats)
+	{
+		<li>Name: @c.Name</li>
+		<li>Colour: @c.Colour</li>
+		<li>Info: @c.AdditionalInfo</li>
+		<li>Coordinate: @c.Coordinate</li>
+		<li>Owner Contact: @c.OwnerContact</li>
+		<br />
+	}
+	</ul>
+}
+else
+{
+		<p>Nope cant access the webs</p>
+}
+
+
+
+@*<input placeholder="Name of missing cat" @bind="NewMissingCat" />*@
+@*<button @onclick="AddNewCat">Add cat</button>*@
+
+@code {
+	private string NewMissingCat;
+
+	HttpClient _hc = new();
+	Cat[] cats;
+	HttpResponseMessage response;
+	string resp;
+
+	protected override async Task OnInitializedAsync()
+	{
+		//response = await _hc.GetAsync(@"http://localhost:5164/api/Cats/1");
+		response = await _hc.GetAsync(@"http://localhost:5164/api/Cats");
+		if (response.IsSuccessStatusCode)
+		{
+			resp = await response.Content.ReadAsStringAsync();
+			cats = JsonSerializer.Deserialize<Cat[]>(resp);
+		}
+	}
+
+	//async void AddNewCat()
+	//{
+	//	if (!string.IsNullOrEmpty(NewMissingCat))
+	//	{
+	//		Cat newCat = new();
+	//		newCat.Name = NewMissingCat;
+	//		await catDb.SaveItemAsync(newCat);
+	//		await App.Current.MainPage.DisplayAlert("Upload complete", $"Cat {NewMissingCat} added to database", "Ok");
+	//		NewMissingCat = string.Empty;
+	//	}
+	//}
+}

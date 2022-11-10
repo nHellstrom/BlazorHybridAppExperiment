@@ -17,7 +17,7 @@ public class CatDatabase
 
         Database = new SQLiteAsyncConnection(DbConstants.DatabasePath, DbConstants.Flags);
         var result = await Database.CreateTableAsync<Cat>();
-    }
+	}
 
     public async Task<List<Cat>> GetItemsAsync()
     {
