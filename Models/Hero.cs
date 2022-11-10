@@ -1,7 +1,6 @@
-﻿
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
-namespace BlazorHybridApp.Data;
+namespace BlazorHybridApp.Models;
 
 public class Hero
 {
