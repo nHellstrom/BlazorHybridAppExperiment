@@ -1,0 +1,55 @@
+﻿@page "/todo"
+@inject AppState _AppState
+@using BlazorHybridApp.Data
+@using Microsoft.Maui.Storage
+@using System.IO
+@using System.Text.Json
+
+<h3>Todo (@_AppState.todos.Count(td => !td.IsDone))</h3>
+
+<button @onclick="Save">Save</button>
+<button @onclick="Load">Load</button>
+
+<ul class="list-unstyled">
+	@foreach (var todo in _AppState.todos)
+	{
+		<li>
+			<input type="checkbox" @bind="todo.IsDone" />
+			<input @bind="todo.Title" />		
+		</li>
+	}
+</ul>
+
+<input placeholder="Something todo" @bind="newTodo" />
+<button @onclick="AddTodo">Add todo</button>
+
+@code {
+	private string? newTodo;
+
+	private void AddTodo()
+	{
+		if (!string.IsNullOrWhiteSpace(newTodo))
+		{
+			_AppState.todos.Add(new TodoItem { Title = newTodo });
+			newTodo = string.Empty;
+		}
+	}
+
+	private async Task Save()
+	{
+		var contents = JsonSerializer.Serialize(_AppState.todos);
+		var path = Path.Combine(FileSystem.AppDataDirectory, "todo.json");
+		File.WriteAllText(path, contents);
+		await App.Current.MainPage.DisplayAlert("List Saved", $"List has been saved to {path}", "OK!");
+	}
+
+	private void Load()
+	{
+		var path = Path.Combine(FileSystem.AppDataDirectory, "todo.json");
+		if (!File.Exists(path)) return;
+		var contents = File.ReadAllText(path);
+		var savedItems = JsonSerializer.Deserialize<List<TodoItem>>(contents);
+		_AppState.todos.Clear();
+		_AppState.todos.AddRange(savedItems);
+	}
+}

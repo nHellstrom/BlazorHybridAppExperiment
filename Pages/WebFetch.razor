@@ -1,0 +1,42 @@
+﻿@page "/webfetch"
+@using BlazorHybridApp.Data
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@using System;
+@using System.Net;
+@using System.Net.Http;
+@using System.Net.Http.Headers;
+@using System.Threading.Tasks;
+
+<h3>WebFetch</h3>
+
+<p>Lets see if we can call a web API from inside MAUI Blazor Hybrid!</p>
+
+@if(hero is not null)
+{
+    <ul>
+        <li>Name: @hero.Name</li>
+        <li>Height: @hero.Height</li>
+        <li>Hair: @hero.HairColor</li>
+        <li>Gender: @hero.Gender</li>
+    </ul>
+}
+else
+{
+    <p>Nope cant access the webs</p>
+}
+
+@code {
+    HttpClient _hc = new();
+    Hero hero;
+
+    protected override async Task OnInitializedAsync()
+    {
+        HttpResponseMessage response = await _hc.GetAsync(@"https://swapi.py4e.com/api/people/1");
+        if (response.IsSuccessStatusCode)
+        {
+            string resp = await response.Content.ReadAsStringAsync();
+            hero = JsonSerializer.Deserialize<Hero>(resp);
+        }
+    }
+}

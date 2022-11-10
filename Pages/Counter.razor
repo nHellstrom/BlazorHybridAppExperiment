@@ -1,0 +1,28 @@
+﻿@page "/counter"
+@inject AppState _AppState
+@using BlazorHybridApp.Data
+
+<h1>Wow such counter wow🐶</h1>
+
+<p role="status">Current count: @_AppState.currentCount</p>
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+<div class="puppies">
+    @for (int i = 1; i <= _AppState.currentCount; i++)
+    {
+    <p>🐶</p>
+    }
+</div>
+
+
+@code {
+    //private int currentCount = 0;
+
+    [Parameter]
+    public int IncrementAmount { get; set; } = 1;
+
+    private void IncrementCount()
+    {
+        _AppState.currentCount += IncrementAmount;
+    }
+}
